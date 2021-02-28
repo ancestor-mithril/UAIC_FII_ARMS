@@ -108,6 +108,7 @@ def get_friends(user: str, friend_pattern: re.Pattern = common_pattern,
     :param no_friends_pattern: compiled re pattern appliable to find number of friends on current user page
     :return: a list of usernames, friends with user
     """
+    # TODO: rename to friend scrapper
     return_list = []
     url = f"https://myanimelist.net/profile/{user}/friends"
     with urllib.request.urlopen(url) as response:

@@ -13,7 +13,7 @@ def run():
     # by taking the most popular and appreciated comment posters
     # should not be used anymore
 
-    remove_inconsistent_users(user_set)
+    # remove_inconsistent_users(user_set)  # done once, should be enough
 
     print(user_set)
 
