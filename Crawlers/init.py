@@ -2,6 +2,8 @@ import re
 import csv
 import os
 
+from utils import csv_fp
+
 common_url_set = {
     'https://myanimelist.net/reviews.php?st=mosthelpful',
 }
@@ -28,13 +30,13 @@ user_set = set()
 
 
 def init_user_set(file: str = "user_set.csv"):
-    assert os.path.isfile(file), f"{file} is not a path to a valid file"
-    fp = open(file)
-    try:
-        csv_fp = csv.reader(fp)
-    except Exception as e:
-        raise Exception("file not a csv file")
-    for i in csv_fp:
+    """
+
+    :param file: a valid path to the csv file containing the already processed users
+    :return: void, does add read users to global user_set
+    """
+    global user_set
+    for i in csv_fp(file):
         # print(i)
         user_set.update(i)
 
