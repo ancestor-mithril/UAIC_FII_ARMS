@@ -4,6 +4,7 @@ import os
 
 def csv_fp(file: str):
     """
+    raises exception is file is not a valid csv file
 
     :param file: a valid path to a csv file
     :return: csv file pointer

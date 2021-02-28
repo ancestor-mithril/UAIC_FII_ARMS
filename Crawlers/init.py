@@ -12,8 +12,10 @@ uncommon_url_set_1 = {
     'https://myanimelist.net/blog.php?eid=830113',
 }
 
-common_pattern = re.compile(r'/profile\/(.*?)"><strong>\1<')  # valid for every friend file
+common_pattern = re.compile(r'\/profile\/(.*?)"><strong>\1<')  # valid for every friend file
 uncommon_pattern_1 = re.compile(r'profile/(.*?)" rel="nofollow">\1<')
+# valid for this forum link: https://myanimelist.net/blog.php?eid=830113
+friend_count_pattern = re.compile(r'>All \((\d+)\)<\/')
 
 url_sets = [
     {
