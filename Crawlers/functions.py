@@ -8,6 +8,7 @@ import time
 from init import common_pattern, friend_count_pattern
 from utils import csv_fp
 import random
+import itertools
 
 
 def scrap_url_sets(url_sets: List[dict], user_set: set):
@@ -86,11 +87,12 @@ def update_with_friends(user_set_path: str = "user_set.csv", checked_path: str =
     for file, st in path_set_list:
         for i in csv_fp(file):
             st.update(i)
-    to_check_users = frozenset(to_check_users)
+
     if check_limit <= 0:
         check_limit = len(to_check_users)
     check_limit = min(check_limit, len(to_check_users))
 
+    to_check_users = frozenset(itertools.islice(to_check_users, check_limit))
     print(f"Users to be checked: {check_limit}")
     i = 0
     for user in to_check_users:
