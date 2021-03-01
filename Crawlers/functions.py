@@ -121,7 +121,7 @@ def get_friends(user: str, friend_pattern: re.Pattern = common_pattern,
     while i + 100 < friends_number:
         # TODO: de vazut daca e ok asa sau se poate un interval mai mic sau trebuie un interval mai mare
         #  stefan poate testezi tu metoda asta
-        sleep_interval = random.randint(10, 30)
+        sleep_interval = random.randint(5,15)
         time.sleep(sleep_interval)
         i += 100
         url = f"https://myanimelist.net/profile/{user}/friends?offset={i}"
