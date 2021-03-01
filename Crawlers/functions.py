@@ -67,7 +67,7 @@ def remove_inconsistent_users(user_set: set):
 
 
 def update_with_friends(user_set_path: str = "user_set.csv", checked_path: str = "checked_user_set.csv",
-                        to_check_path: str = "to_be_checked_user_set.csv") -> set:
+                        to_check_path: str = "to_be_checked_user_set.csv", check_limit: int = 0) -> set:
     """
     function reads all users, already processed users and the users to be processed now
     takes the last and processes them, and after that moves them to already processed file
@@ -76,6 +76,7 @@ def update_with_friends(user_set_path: str = "user_set.csv", checked_path: str =
     :param user_set_path: a valid path to the csv file containing the already processed users
     :param checked_path: as above but users within were already checked for friends
     :param to_check_path: as above but users within are to be checked for friends
+    :param check_limit: the number of users from to_check_users to check. If leq than 0 => len(to_check_users)
     :return: user_set with all determined users until exit time
     """
     user_set = set()
@@ -86,9 +87,19 @@ def update_with_friends(user_set_path: str = "user_set.csv", checked_path: str =
         for i in csv_fp(file):
             st.update(i)
     to_check_users = frozenset(to_check_users)
+    if check_limit <= 0:
+        check_limit = len(to_check_users)
+    print(f"Users to be checked: {check_limit}")
+    i = 0
     for user in to_check_users:
-        friends = get_friends(user)
+        sleep_interval = random.randint(10, 30)
+        time.sleep(sleep_interval)
+        i += 1
+        print(f"{i} from {check_limit}")
+        friends = friend_scrapper(user)
         user_set.update(friends)
+        if i > check_limit:
+            break
     checked_users = set.union(checked_users, to_check_users)
     to_check_users = set.difference(user_set, checked_users)
     for file, st in path_set_list:
@@ -99,8 +110,8 @@ def update_with_friends(user_set_path: str = "user_set.csv", checked_path: str =
     return user_set
 
 
-def get_friends(user: str, friend_pattern: re.Pattern = common_pattern,
-                no_friends_pattern: re.Pattern = friend_count_pattern) -> List[str]:
+def friend_scrapper(user: str, friend_pattern: re.Pattern = common_pattern,
+                    no_friends_pattern: re.Pattern = friend_count_pattern) -> List[str]:
     """
 
     :param user: mal user
@@ -121,7 +132,7 @@ def get_friends(user: str, friend_pattern: re.Pattern = common_pattern,
     while i + 100 < friends_number:
         # TODO: de vazut daca e ok asa sau se poate un interval mai mic sau trebuie un interval mai mare
         #  stefan poate testezi tu metoda asta
-        sleep_interval = random.randint(5,15)
+        sleep_interval = random.randint(5, 15)
         time.sleep(sleep_interval)
         i += 100
         url = f"https://myanimelist.net/profile/{user}/friends?offset={i}"

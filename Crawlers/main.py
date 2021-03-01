@@ -1,21 +1,30 @@
 import csv
 
 
-from functions import scrap_url_sets, remove_inconsistent_users
+from functions import scrap_url_sets, remove_inconsistent_users, update_with_friends
 from init import url_sets, user_set, init_user_set
 
 
-def run():
-    user_set_csv = "./user_set.csv"
-    init_user_set(user_set_csv)
-
+def obsolete():
     # scrap_url_sets(url_sets, user_set)  # initial method of getting the most important users
     # by taking the most popular and appreciated comment posters
     # should not be used anymore
 
     # remove_inconsistent_users(user_set)  # done once, should be enough
+    pass
 
-    print(user_set)
+
+def run():
+    user_set_csv = "./user_set.csv"
+    init_user_set(user_set_csv)
+    obsolete()
+
+    # IMPORTANT!
+    # before calling this method, limit it!
+    update_with_friends(check_limit=150)
+    # Recommended: 150 users take
+
+    # print(user_set)
 
     print("length of user_set:", len(user_set))
     with open(user_set_csv, "w") as fp:
