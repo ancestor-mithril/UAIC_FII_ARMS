@@ -89,6 +89,8 @@ def update_with_friends(user_set_path: str = "user_set.csv", checked_path: str =
     to_check_users = frozenset(to_check_users)
     if check_limit <= 0:
         check_limit = len(to_check_users)
+    check_limit = min(check_limit, len(to_check_users))
+
     print(f"Users to be checked: {check_limit}")
     i = 0
     for user in to_check_users:
@@ -98,10 +100,11 @@ def update_with_friends(user_set_path: str = "user_set.csv", checked_path: str =
         print(f"{i} from {check_limit}")
         friends = friend_scrapper(user)
         user_set.update(friends)
-        if i > check_limit:
+        if i >= check_limit:
             break
     checked_users = set.union(checked_users, to_check_users)
     to_check_users = set.difference(user_set, checked_users)
+    path_set_list = [(user_set_path, user_set), (checked_path, checked_users), (to_check_path, to_check_users)]
     for file, st in path_set_list:
         with open(file, "w") as fp:
             write = csv.writer(fp)

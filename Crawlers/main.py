@@ -22,14 +22,15 @@ def run():
     # IMPORTANT!
     # before calling this method, limit it!
     update_with_friends(check_limit=150)
-    # Recommended: 150 users take
+    # Recommended: 100 users take ~50 minutes
 
     # print(user_set)
 
     print("length of user_set:", len(user_set))
-    with open(user_set_csv, "w") as fp:
-        write = csv.writer(fp)
-        write.writerow(user_set)
+    # TODO: do not rewrite user set here
+    # with open(user_set_csv, "w") as fp:
+    #     write = csv.writer(fp)
+    #     write.writerow(user_set)
 
 
 if __name__ == "__main__":
