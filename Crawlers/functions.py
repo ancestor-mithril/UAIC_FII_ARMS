@@ -96,7 +96,7 @@ def update_with_friends(user_set_path: str = "user_set.csv", checked_path: str =
     print(f"Users to be checked: {check_limit}")
     i = 0
     for user in to_check_users:
-        sleep_interval = random.randint(10, 30)
+        sleep_interval = random.randint(10, 20)
         time.sleep(sleep_interval)
         i += 1
         print(f"{i} from {check_limit}")
@@ -127,23 +127,27 @@ def friend_scrapper(user: str, friend_pattern: re.Pattern = common_pattern,
     # TODO: rename to friend scrapper
     return_list = []
     url = f"https://myanimelist.net/profile/{user}/friends"
-    with urllib.request.urlopen(url) as response:
-        if response.code != 200:
-            return return_list
-        html = response.read().decode()
-    friends_number = int(re.findall(no_friends_pattern, html)[0])
-    return_list += re.findall(friend_pattern, html)
-    i = 0
-    while i + 100 < friends_number:
-        # TODO: de vazut daca e ok asa sau se poate un interval mai mic sau trebuie un interval mai mare
-        #  stefan poate testezi tu metoda asta
-        sleep_interval = random.randint(5, 15)
-        time.sleep(sleep_interval)
-        i += 100
-        url = f"https://myanimelist.net/profile/{user}/friends?offset={i}"
+    try:
         with urllib.request.urlopen(url) as response:
             if response.code != 200:
-                return return_list
+                print(f"{user} has {response.code}")
             html = response.read().decode()
+        friends_number = int(re.findall(no_friends_pattern, html)[0])
         return_list += re.findall(friend_pattern, html)
+        i = 0
+        while i + 100 < friends_number:
+            # TODO: de vazut daca e ok asa sau se poate un interval mai mic sau trebuie un interval mai mare
+            #  stefan poate testezi tu metoda asta
+            sleep_interval = random.randint(5, 10)
+            time.sleep(sleep_interval)
+            i += 100
+            url = f"https://myanimelist.net/profile/{user}/friends?offset={i}"
+            with urllib.request.urlopen(url) as response:
+                if response.code != 200:
+                    return return_list
+                html = response.read().decode()
+            return_list += re.findall(friend_pattern, html)
+    except HTTPError as err:
+        print(f"{user} has error {err.code}")
+        time.sleep(15)
     return return_list

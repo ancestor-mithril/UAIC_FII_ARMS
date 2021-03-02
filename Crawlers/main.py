@@ -21,8 +21,9 @@ def run():
 
     # IMPORTANT!
     # before calling this method, limit it!
-    update_with_friends(check_limit=80)
+    update_with_friends(check_limit=1000)
     # Recommended: 100 users take ~50 minutes
+    # start: 7:50
 
     # print(user_set)
 
