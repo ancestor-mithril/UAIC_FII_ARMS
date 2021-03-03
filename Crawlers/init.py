@@ -31,7 +31,7 @@ url_sets = [
 user_set = set()
 
 
-def init_user_set(file: str = "user_set.csv"):
+def init_user_set(file: str = "user_set_1.csv"):
     """
 
     :param file: a valid path to the csv file containing the already processed users

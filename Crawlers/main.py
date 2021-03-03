@@ -15,13 +15,13 @@ def obsolete():
 
 
 def run():
-    user_set_csv = "./user_set.csv"
+    user_set_csv = "./user_set_1.csv"
     init_user_set(user_set_csv)
     obsolete()
 
     # IMPORTANT!
     # before calling this method, limit it!
-    update_with_friends(check_limit=1000)
+    update_with_friends(check_limit=500)
     # Recommended: run only 100 users once
     # it takes ~30 minutes
 
