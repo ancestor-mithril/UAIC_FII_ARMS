@@ -96,7 +96,7 @@ def update_with_friends(user_set_path: str = "user_set.csv", checked_path: str =
     print(f"Users to be checked: {check_limit}")
     i = 0
     for user in to_check_users:
-        sleep_interval = random.randint(5, 15)
+        sleep_interval = random.uniform(5, 10)
         time.sleep(sleep_interval)
         i += 1
         print(f"{i} from {check_limit}")
@@ -135,7 +135,7 @@ def friend_scrapper(user: str, friend_pattern: re.Pattern = common_pattern,
         return_list += re.findall(friend_pattern, html)
         i = 0
         while i + 100 < friends_number:
-            sleep_interval = random.randint(2, 5)
+            sleep_interval = random.uniform(2, 5)
             time.sleep(sleep_interval)
             i += 100
             url = f"https://myanimelist.net/profile/{user}/friends?offset={i}"
