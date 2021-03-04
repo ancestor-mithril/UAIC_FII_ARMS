@@ -162,3 +162,26 @@ def check_user_set(user_set_path: str = "user_set.csv"):
     for i in csv_fp(user_set_path):
         user_set.update(i)
     print(f"User set has {len(user_set)} users")
+
+
+def get_ro_users(user_set: set, user_set_csv="./user_set.csv"):
+    """
+
+    :param user_set: set of already determined users
+    :param user_set_csv: path of user set csv file
+    :return: void, updates user set with romanian users
+    """
+    pattern = re.compile(r"href=\"\/profile\/(.*?)\">\1<")
+    for i in range(0, 3937, 24):
+        url = f"https://myanimelist.net/users.php?cat=user&q=&loc=Romania&agelow=0&agehigh=60&g=&show={i}"
+        with urllib.request.urlopen(url) as response:
+            if response.code != 200:
+                continue
+            html = response.read().decode()
+        users = re.findall(pattern, html)
+        user_set.update(users)
+        sleep_interval = random.uniform(2, 4)
+        time.sleep(sleep_interval)
+    with open(user_set_csv, "w") as fp:
+        write = csv.writer(fp)
+        write.writerow(user_set)
