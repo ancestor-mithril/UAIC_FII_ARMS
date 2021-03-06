@@ -55,9 +55,10 @@ def step_5_refresh():
         "client_secret": os.getenv("CLIENT_SECRET"),
         "grant_type": "refresh_token",
         "refresh_token": os.getenv("REFRESH_TOKEN")
-
     }
-    # x = requests.post(base_url_step_5, step_5_params)
-    # TODO: DEBUG here
-    # print(x)
+    x = requests.post(base_url_step_5, step_5_params).json()
+    os.putenv("REFRESH_TOKEN", x["refresh_token"])
+    os.putenv("ACCESS_TOKEN", x["access_token"])
+    with open("new_tokens.json", "w") as fp:
+        fp.write(x)
 

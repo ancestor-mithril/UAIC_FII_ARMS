@@ -67,8 +67,8 @@ def remove_inconsistent_users(user_set: set):
     print("DONE")
 
 
-def update_with_friends(user_set_path: str = "user_set.csv", checked_path: str = "checked_user_set.csv",
-                        to_check_path: str = "to_be_checked_user_set.csv", check_limit: int = 0) -> set:
+def update_with_friends(user_set_path: str = "user_set_1.csv", checked_path: str = "checked_user_set_1.csv",
+                        to_check_path: str = "to_be_checked_user_set_1.csv", check_limit: int = 0) -> set:
     """
     function reads all users, already processed users and the users to be processed now
     takes the last and processes them, and after that moves them to already processed file
@@ -96,7 +96,7 @@ def update_with_friends(user_set_path: str = "user_set.csv", checked_path: str =
     print(f"Users to be checked: {check_limit}")
     i = 0
     for user in to_check_users:
-        sleep_interval = random.uniform(5, 10)
+        sleep_interval = random.uniform(4, 8)
         time.sleep(sleep_interval)
         i += 1
         print(f"{i} from {check_limit}")
@@ -131,11 +131,13 @@ def friend_scrapper(user: str, friend_pattern: re.Pattern = common_pattern,
             if response.code != 200:
                 print(f"{user} has {response.code}")
             html = response.read().decode()
+        if len(re.findall(no_friends_pattern, html)) == 0:
+            return return_list
         friends_number = int(re.findall(no_friends_pattern, html)[0])
         return_list += re.findall(friend_pattern, html)
         i = 0
         while i + 100 < friends_number:
-            sleep_interval = random.uniform(2, 5)
+            sleep_interval = random.uniform(2, 4)
             time.sleep(sleep_interval)
             i += 100
             url = f"https://myanimelist.net/profile/{user}/friends?offset={i}"
@@ -150,22 +152,57 @@ def friend_scrapper(user: str, friend_pattern: re.Pattern = common_pattern,
     return return_list
 
 
-def check_user_sets(user_set_path: str = "user_set.csv", checked_path: str = "checked_user_set.csv",
-                    to_check_path: str = "to_be_checked_user_set.csv"):
+def check_user_set(user_set_path: str = "user_set.csv"):
     """
 
     :param user_set_path: a valid path to the csv file containing the already processed users
-    :param checked_path: as above but users within were already checked for friends
-    :param to_check_path: as above but users within are to be checked for friends
     :return: void
     """
     user_set = set()
-    checked_users = set()
-    to_check_users = set()
-    path_set_list = [(user_set_path, user_set), (checked_path, checked_users), (to_check_path, to_check_users)]
-    for file, st in path_set_list:
-        for i in csv_fp(file):
-            st.update(i)
+    for i in csv_fp(user_set_path):
+        user_set.update(i)
     print(f"User set has {len(user_set)} users")
-    print(f"Checked users: {len(checked_users)} users")
-    print(f"User remained to be checked: {len(to_check_users)} users")
+
+
+def get_ro_users(user_set: set, user_set_csv="./user_set.csv"):
+    """
+
+    :param user_set: set of already determined users
+    :param user_set_csv: path of user set csv file
+    :return: void, updates user set with romanian users
+    """
+    pattern = re.compile(r"href=\"\/profile\/(.*?)\">\1<")
+    for i in range(0, 3937, 24):
+        url = f"https://myanimelist.net/users.php?cat=user&q=&loc=Romania&agelow=0&agehigh=60&g=&show={i}"
+        with urllib.request.urlopen(url) as response:
+            if response.code != 200:
+                continue
+            html = response.read().decode()
+        users = re.findall(pattern, html)
+        user_set.update(users)
+        sleep_interval = random.uniform(2, 4)
+        time.sleep(sleep_interval)
+    with open(user_set_csv, "w") as fp:
+        write = csv.writer(fp)
+        write.writerow(user_set)
+
+
+def get_anime(anime_set_csv="./anime_set.csv"):
+    anime_set = set()
+    pattern = re.compile(r"https:\/\/myanimelist.net\/anime\/\d+\/([^\/]*?)\"")
+    for i in range(0, 51, 50):
+        url = f"https://myanimelist.net/topanime.php?limit={i}"
+        with urllib.request.urlopen(url) as response:
+            if response.code != 200:
+                continue
+            html = response.read().decode()
+        anime = re.findall(pattern, html)
+        for i in range(len(anime)):
+            anime[i] = re.sub(r"[^a-zA-Z0-9_ ]", "", anime[i])
+        anime_set.update(anime)
+        sleep_interval = random.uniform(2, 4)
+        time.sleep(sleep_interval)
+    with open(anime_set_csv, "w") as fp:
+        write = csv.writer(fp)
+        write.writerow(anime_set)
+    return anime_set
