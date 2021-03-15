@@ -17,8 +17,8 @@ def obsolete():
 def run():
     anime_set_csv = "./anime_set.csv"
 
-    anime_set = get_anime(anime_set_csv)
-    print("length of anime_set:", len(anime_set))
+    anime_dict = get_anime(anime_set_csv)
+    print("length of anime_set:", len(anime_dict))
 
 
 if __name__ == "__main__":

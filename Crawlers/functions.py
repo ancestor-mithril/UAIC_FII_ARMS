@@ -188,9 +188,9 @@ def get_ro_users(user_set: set, user_set_csv="./user_set.csv"):
 
 
 def get_anime(anime_set_csv="./anime_set.csv"):
-    anime_set = set()
-    pattern = re.compile(r"https:\/\/myanimelist.net\/anime\/\d+\/([^\/]*?)\"")
-    for i in range(0, 51, 50):
+    anime_dict = dict()
+    pattern = pattern = r"<tr class=\"ranking-list\">\s*<td .*?>\s*<span .*?>\d+<\/span>\s*<\/td>\s*<td .*?>\s*<a .*?href=\"https:\/\/myanimelist.net\/anime\/(\d+)\/(.*?)\""
+    for i in range(0, 1000, 50):
         url = f"https://myanimelist.net/topanime.php?limit={i}"
         with urllib.request.urlopen(url) as response:
             if response.code != 200:
@@ -198,11 +198,15 @@ def get_anime(anime_set_csv="./anime_set.csv"):
             html = response.read().decode()
         anime = re.findall(pattern, html)
         for i in range(len(anime)):
-            anime[i] = re.sub(r"[^a-zA-Z0-9_ ]", "", anime[i])
-        anime_set.update(anime)
+            anime[i] = [anime[i][0],anime[i][1]]
+            anime[i][1] = re.sub(r"[^a-zA-Z0-9_ !%\$\"\-:\.#=\?;,\'&]", "", anime[i][1])
+            anime_dict[anime[i][0]] = anime[i][1]
         sleep_interval = random.uniform(2, 4)
         time.sleep(sleep_interval)
     with open(anime_set_csv, "w") as fp:
         write = csv.writer(fp)
-        write.writerow(anime_set)
-    return anime_set
+        i=0
+        for key,value in anime_dict.items():
+            i+=1
+            write.writerow([f"{i} - {key} : {value}"])
+    return anime_dict
