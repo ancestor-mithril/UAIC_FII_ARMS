@@ -33,20 +33,38 @@ anime_list = list()
 anime_dict = dict()
 
 
-def init_user_set(user_file: str = "user_set.csv", anime_file: str = "anime_list.csv"):
+def init_user_set(user_file: str = "user_set.csv", anime_file: str = "anime_set.csv",
+                  anime_data_file: str = "anime_data.csv"):
     """
 
     :param user_file: a valid path to the csv file containing the already processed users
     :param anime_file: a valid path to the csv file containing the list of anime
-    :return: void, does add read users to global user_set and animes to anime_set
+    :param anime_data_file:
+    :return: user
     """
     global user_set
-    global anime_list
     global anime_dict
+    global anime_list
     for i in csv_fp(user_file):
         user_set.update(i)
-    anime_list = eval(open(anime_file, "r").read())
-    anime_dict = eval(open("anime_dict.json", "r").read())
-    return user_set, anime_list, anime_dict
+    anime_list = []
+    anime_id_pattern = re.compile(r"- (\w+) :")
+    with open(anime_file, "r") as fp:
+        for line in fp.readlines():
+            anime_id = re.findall(anime_id_pattern, line)
+            if len(anime_id) > 0:
+                anime_list.append(int(anime_id[0]))
+    anime_dict = dict()
+    for i in range(len(anime_list)):
+        anime_dict[anime_list[i]] = i
+    anime_data = [[[0 for k in range(3)] for j in range(i + 1, 1000)] for i in range(1000 - 1)]
+    with open(anime_data_file, "r") as fp:
+        for line in fp.readlines():
+            data = line.split(",")
+            if len(data) == 4:
+                data = list(map(int, data))
+                anime_data[data[0]][data[1] - data[0] - 1][data[2]] = data[3]
+
+    return user_set, anime_dict, anime_data
 
 

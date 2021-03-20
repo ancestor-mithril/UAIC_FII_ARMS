@@ -2,6 +2,7 @@ import csv
 import io
 import json
 import re
+from typing import List
 
 import requests
 from dotenv import load_dotenv
@@ -13,6 +14,13 @@ load_dotenv()
 headers = None
 data = None
 
+score_value = {
+    10: 0,
+    9: 1,
+    8: 1,
+    7: 2,
+    6: 2
+}
 
 def init_api():
     """
@@ -50,11 +58,11 @@ def process_user_list(user_list: dict):
     for anime_data in user_list["data"]:
         score = anime_data["list_status"]["score"]
         if score > 5:
-            user_anime_list[re.sub(r"[^a-zA-Z0-9_ ]", "", anime_data["node"]["title"])] = score
+            user_anime_list[anime_data["node"]["id"]] = score_value[score]
     return user_anime_list
 
 
-def collect_data(user_anime_list: dict, anime_list: list, anime_dict: dict):
+def collect_data(user_anime_list: dict, anime_list: list, anime_data: List[List[List[int]]]):
     """
     1. creates a dict of score, list of animes
     2. appends new anime to anime list
@@ -63,41 +71,19 @@ def collect_data(user_anime_list: dict, anime_list: list, anime_dict: dict):
     :param user_anime_list: dictionary of anime title and score
     :return: void, collects data and adds it to anime list and anime dict
     """
-    scores = {i: [] for i in range(6, 11)}
-    for anime in user_anime_list:
-        scores[user_anime_list[anime]].append(anime)
-        if anime not in anime_list:
-            anime_list.append(anime)
-    for score in scores:
-        n = len(scores[score])
-        for i in range(n - 1):
-            index_1 = anime_list.index(scores[score][i])
-            for j in range(i + 1, n):
-                index_2 = anime_list.index(scores[score][j])
-                i_min = str(min(index_1, index_2))
-                i_max = str(max(index_1, index_2))
-                if i_min not in anime_dict.keys():
-                    anime_dict[i_min] = dict()
-                if i_max not in anime_dict[i_min].keys():
-                    anime_dict[i_min][i_max] = {str(i): 0 for i in range(6, 11)}
-                anime_dict[i_min][i_max][str(score)] += 1
+    print(user_anime_list)
 
 
-def re_print(user_set, anime_list, anime_dict):
-    """
-
-    :return: void, prints user_list, anime_list and anime_dict
-    """
+def save_anime_data(anime_data, user_set):
     with open("user_set.csv", "w") as fp:
         write = csv.writer(fp)
         write.writerow(user_set)
-    with io.open("anime_list.csv", "w", encoding="utf-8") as fp:
-        fp.write(str(anime_list))
-    a = {i: j for i, j in enumerate(anime_list)}
-    with io.open("anime_list.json", "w", encoding="utf-8") as fp:
-        json.dump(a, fp)
-    with open("anime_dict.json", "w") as fp:
-        json.dump(anime_dict, fp)
+    with open("anime_data.csv", "w") as fp:
+        write = csv.writer(fp)
+        for anime_1 in range(len(anime_data)):
+            for anime_2 in range(len(anime_data[anime_1])):
+                for category in range(3):
+                    write.writerow([anime_1, anime_2 + anime_1 + 1, category, anime_data[anime_1][anime_2][category]])
 
 
 def refresh_token():
