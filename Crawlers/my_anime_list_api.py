@@ -62,7 +62,7 @@ def process_user_list(user_list: dict):
     return user_anime_list
 
 
-def collect_data(user_anime_list: dict, anime_list: list, anime_data: List[List[List[int]]]):
+def collect_data(user_anime_list: dict, anime_dict: list, anime_data: List[List[List[int]]]):
     """
     1. creates a dict of score, list of animes
     2. appends new anime to anime list
@@ -71,7 +71,19 @@ def collect_data(user_anime_list: dict, anime_list: list, anime_data: List[List[
     :param user_anime_list: dictionary of anime title and score
     :return: void, collects data and adds it to anime list and anime dict
     """
-    print(user_anime_list)
+    scores = {i: [] for i in range(3)}
+    for anime in user_anime_list:
+        if anime in anime_dict:
+            scores[user_anime_list[anime]].append(anime)
+    for score in scores:
+        n = len(scores[score])
+        for i in range(n - 1):
+            anime_index_1 = anime_dict[scores[score][i]]
+            for j in range(i + 1, n):
+                anime_index_2 = anime_dict[scores[score][j]]
+                i_min = min(anime_index_1, anime_index_2)
+                i_max = max(anime_index_1, anime_index_2)
+                anime_data[i_min][i_max - i_min - 1][score] += 1
 
 
 def save_anime_data(anime_data, user_set):
