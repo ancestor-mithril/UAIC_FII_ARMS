@@ -11,7 +11,7 @@ def run():
     user_set, anime_dict, anime_data = init_user_set()
     print("user set len", len(user_set))
     init_api()
-    for i in range(35000):
+    for i in range(7000):
         print(i)
         user = user_set.pop()
         x = get_user_data(user)
