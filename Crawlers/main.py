@@ -1,6 +1,6 @@
 import csv
 
-from functions import scrap_url_sets, remove_inconsistent_users, update_with_friends, get_ro_users, get_anime
+from functions import scrap_url_sets, remove_inconsistent_users, update_with_friends, get_ro_users, get_anime,create_anime_dict
 from init import url_sets, user_set, init_user_set
 
 
@@ -15,10 +15,9 @@ def obsolete():
 
 
 def run():
-    anime_set_csv = "./anime_set.csv"
+    anime_set_genres = "./anime_set_genres.csv"
 
-    anime_dict = get_anime(anime_set_csv)
-    print("length of anime_set:", len(anime_dict))
+    create_anime_dict(anime_set_genres)
 
 
 if __name__ == "__main__":

@@ -189,7 +189,7 @@ def get_ro_users(user_set: set, user_set_csv="./user_set.csv"):
 
 def get_anime(anime_set_csv="./anime_set.csv"):
     anime_dict = dict()
-    pattern = pattern = r"<tr class=\"ranking-list\">\s*<td .*?>\s*<span .*?>\d+<\/span>\s*<\/td>\s*<td .*?>\s*<a .*?href=\"https:\/\/myanimelist.net\/anime\/(\d+)\/(.*?)\""
+    pattern  = r"<tr class=\"ranking-list\">\s*<td .*?>\s*<span .*?>\d+<\/span>\s*<\/td>\s*<td .*?>\s*<a .*?href=\"https:\/\/myanimelist.net\/anime\/(\d+)\/(.*?)\""
     for i in range(0, 1000, 50):
         url = f"https://myanimelist.net/topanime.php?limit={i}"
         with urllib.request.urlopen(url) as response:
@@ -210,3 +210,44 @@ def get_anime(anime_set_csv="./anime_set.csv"):
             i+=1
             write.writerow([f"{i} - {key} : {value}"])
     return anime_dict
+
+def create_anime_dict(anime_set_genres="./anime_set_genres.csv"):
+    anime_id_list = []
+    anime_score_list = []
+    anime_genre_list = []
+    anime_id_pattern = re.compile(r"- (\w+) :")
+    with open("anime_set.csv", "r") as fp:
+        for line in fp.readlines():
+            anime_id = re.findall(anime_id_pattern, line)
+            if len(anime_id) > 0:
+                anime_id_list.append(int(anime_id[0]))
+
+    score_pattern =r"<div class=\"score-label score-\d\">(.*?)</div>"
+    genre_pattern =r"<span itemprop=\"genre\" style=\"display: none\">(.*?)<\/span>"
+    for i in range(len(anime_id_list)):
+        print(i)
+        url = f"https://myanimelist.net/anime/{anime_id_list[i]}"
+        with urllib.request.urlopen(url) as response:
+            if response.code != 200:
+                continue
+            html = response.read().decode()
+            score = re.findall(score_pattern, html)
+            genres = re.findall(genre_pattern, html)
+        sleep_interval = random.uniform(2, 4)
+        time.sleep(sleep_interval)
+        anime_score_list.append(float(score[0]))
+        anime_genre_list.append(genres)
+
+    with open(anime_set_genres, "w") as fp:
+        write = csv.writer(fp)
+        for i in range(len(anime_id_list)):
+            new_list = []
+            new_list.append(i)
+            new_list.append(anime_id_list[i])
+            new_list.append(anime_score_list[i])
+            new_list+=anime_genre_list[i]
+            write.writerow(new_list)
+
+
+
+
