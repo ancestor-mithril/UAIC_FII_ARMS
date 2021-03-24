@@ -2,7 +2,7 @@ from functions import friend_scrapper
 import random
 import time
 
-with open("test_friends.txt", "r") as a_file:
+with open("files/test_friends.txt", "r") as a_file:
     sets=set()
     for line in a_file:
         stripped_line = line.strip()

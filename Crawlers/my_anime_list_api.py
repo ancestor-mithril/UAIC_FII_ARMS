@@ -22,6 +22,7 @@ score_value = {
     6: 2
 }
 
+
 def init_api():
     """
     initializes headers used in mal api requests
@@ -114,4 +115,3 @@ def refresh_token():
     with open("new_tokens.json", "w") as fp:
         fp.write(str(x))
 # TODO: refresh the API token each 50 requests
-

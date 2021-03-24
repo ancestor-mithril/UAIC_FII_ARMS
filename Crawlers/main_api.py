@@ -11,10 +11,14 @@ def run():
     user_set, anime_dict, anime_data = init_user_set()
     print("user set len", len(user_set))
     init_api()
-    for i in range(7000):
+    for i in range(4000):
         print(i)
         user = user_set.pop()
-        x = get_user_data(user)
+        try:
+            x = get_user_data(user)
+        except Exception as e:
+            print(e)
+            continue
         y = process_user_list(x)
         if y is None:
             print(None)

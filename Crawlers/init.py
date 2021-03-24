@@ -66,5 +66,3 @@ def init_user_set(user_file: str = "user_set.csv", anime_file: str = "anime_set.
                 anime_data[data[0]][data[1] - data[0] - 1][data[2]] = data[3]
 
     return user_set, anime_dict, anime_data
-
-

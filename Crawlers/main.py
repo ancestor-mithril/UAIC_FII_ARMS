@@ -1,6 +1,7 @@
 import csv
 
-from functions import scrap_url_sets, remove_inconsistent_users, update_with_friends, get_ro_users, get_anime,create_anime_dict
+from functions import scrap_url_sets, remove_inconsistent_users, update_with_friends, get_ro_users, get_anime, \
+    create_anime_dict
 from init import url_sets, user_set, init_user_set
 
 
