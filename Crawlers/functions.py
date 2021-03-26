@@ -248,3 +248,42 @@ def create_anime_dict(anime_set_genres="./anime_set_genres.csv"):
             new_list.append(anime_score_list[i])
             new_list += anime_genre_list[i]
             write.writerow(new_list)
+
+
+def create_gephi_nodes():
+    anime_name_pattern = re.compile(r": (.*?)\n")
+    suppress_ = re.compile(r"_+")
+    anime_name_list = []
+    with open("anime_set.csv", "r") as fp:
+        for line in fp.readlines():
+            anime_name = re.findall(anime_name_pattern, line)
+            if len(anime_name) > 0:
+                anime_name_list.append(re.sub(",", "", re.sub(suppress_, " ", anime_name[0])))
+    anime_score_pattern = re.compile(r"\d+,\d+,(.*?),")
+    anime_score_list = []
+    with open("anime_set_genres.csv", "r") as fp:
+        for line in fp.readlines():
+            anime_score = re.findall(anime_score_pattern, line)
+            if len(anime_score) > 0:
+                anime_score_list.append(anime_score[0])
+    with open("gephi_anime_nodes.csv", "w") as fp:
+        for i in range(len(anime_name_list)):
+            fp.write(f"{i},{anime_name_list[i]},{anime_score_list[i]}\n")
+
+
+def create_gephi_edges():
+    anime_data = [[[0 for k in range(3)] for j in range(i + 1, 1000)] for i in range(1000 - 1)]
+    with open("anime_data.csv", "r") as fp:
+        for line in fp.readlines():
+            data = line.split(",")
+            if len(data) == 4:
+                data = list(map(int, data))
+                anime_data[data[0]][data[1] - data[0] - 1][data[2]] = data[3]
+    for i in range(len(anime_data) - 1):
+        for j in range(i + 1, len(anime_data)):
+            anime_data[i][j - i - 1][0] = anime_data[i][j - i - 1][0] * 2 + anime_data[i][j - i - 1][1]
+    with open("gephi_anime_edges.csv", "w") as fp:
+        for i in range(len(anime_data) - 1):
+            for j in range(len(anime_data[i])):
+                if anime_data[i][j][0] > 0:
+                    fp.write(f"{i},{j + i + 1},undirected,{anime_data[i][j][0]}\n")
