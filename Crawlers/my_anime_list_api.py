@@ -114,4 +114,3 @@ def refresh_token():
     init_api()
     with open("new_tokens.json", "w") as fp:
         fp.write(str(x))
-# TODO: refresh the API token each 50 requests
